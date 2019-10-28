@@ -1,6 +1,19 @@
 import React, { useState, Fragment } from 'react';
 
-function Formulario() {
+function Cita({cita}) {
+  return (
+    <div className="cita">
+      <p>Mascota: <span>{cita.mascota}</span></p>
+      <p>Dueño: <span>{cita.propietario}</span></p>
+      <p>Fecha: <span>{cita.fecha}</span></p>
+      <p>Hora: <span>{cita.hora}</span></p>
+      <p>Sintomas <span>{cita.sintomas}</span></p>
+    </div>
+  )
+}
+
+
+function Formulario({crearCita}) {
   const [cita, actualizarCita] = useState({
     mascota: '',
     propietario: '',
@@ -15,11 +28,20 @@ function Formulario() {
     })
   }
   console.log(cita);
+
+  const enviarCita = (e) => {
+    e.preventDefault();
+    // pasar las citas hacia el componente principal
+    crearCita(cita)
+    // reiniciar el state
+
+  }
+
   return (
     <Fragment>
       <h2>Crear Cita</h2>
 
-      <form>
+      <form onSubmit={enviarCita}>
         <label>Nombre Mascota</label>
         <input 
           type="text" 
@@ -70,15 +92,28 @@ function Formulario() {
 function App() {
   const [citas, guardarCitas] = useState([]);
   console.log(citas);
+  const crearCita = cita => {
+    // tomar una copia del state y agregar nueva cita
+    const nuevasCitas = [...citas, cita]
+    // almacenamos en el state
+    guardarCitas(nuevasCitas)
+  }
   return (
     <Fragment>
       <h1>Administrador de pacientes</h1>
       <div className="container">
         <div className="row">
           <div className="one-half column">
-            <Formulario/>
+            <Formulario
+              crearCita={crearCita}/>
           </div>
-          <div className="one-half column"></div>
+          <div className="one-half column">
+            {citas.map((cita, index) => (
+              <Cita key={index}
+                    index={index}
+                    cita={cita}/>
+            ))}
+          </div>
         </div>
       </div>
     </Fragment>
