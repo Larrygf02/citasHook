@@ -1,6 +1,6 @@
 import React, { useState, Fragment } from 'react';
 
-function Cita({cita}) {
+function Cita({cita, index, eliminarCita}) {
   return (
     <div className="cita">
       <p>Mascota: <span>{cita.mascota}</span></p>
@@ -8,19 +8,23 @@ function Cita({cita}) {
       <p>Fecha: <span>{cita.fecha}</span></p>
       <p>Hora: <span>{cita.hora}</span></p>
       <p>Sintomas <span>{cita.sintomas}</span></p>
+      <button 
+          onClick={() => eliminarCita(index)}
+          type="button" className="button eliminar u-full-width">Eliminar X</button>
     </div>
   )
 }
 
 
 function Formulario({crearCita}) {
-  const [cita, actualizarCita] = useState({
+  const stateInitial = {
     mascota: '',
     propietario: '',
     fecha: '',
     hora: '',
     sintomas: ''
-  })
+  }
+  const [cita, actualizarCita] = useState(stateInitial)
   const actualizarState = e => {
     actualizarCita({
       ...cita,
@@ -34,7 +38,7 @@ function Formulario({crearCita}) {
     // pasar las citas hacia el componente principal
     crearCita(cita)
     // reiniciar el state
-
+    actualizarCita(stateInitial)
   }
 
   return (
@@ -49,6 +53,7 @@ function Formulario({crearCita}) {
           className="u-full-width" 
           placeholder="Nombre Mascota" 
           onChange={actualizarState}
+          value={cita.mascota}
         />
 
         <label>Nombre Dueño</label>
@@ -58,6 +63,7 @@ function Formulario({crearCita}) {
           className="u-full-width"  
           placeholder="Nombre Dueño de la Mascota"
           onChange={actualizarState}
+          value={cita.propietario}
         />
 
         <label>Fecha</label>
@@ -66,6 +72,7 @@ function Formulario({crearCita}) {
           className="u-full-width"
           name="fecha"
           onChange={actualizarState}
+          value={cita.fecha}
         />               
 
         <label>Hora</label>
@@ -74,6 +81,7 @@ function Formulario({crearCita}) {
           className="u-full-width"
           name="hora" 
           onChange={actualizarState}
+          value={cita.time}
         />
 
         <label>Sintomas</label>
@@ -81,6 +89,7 @@ function Formulario({crearCita}) {
           className="u-full-width"
           name="sintomas"
           onChange={actualizarState}
+          value={cita.sintomas}
         ></textarea>
 
         <button type="submit" className="button-primary u-full-width">Agregar</button>
@@ -98,6 +107,17 @@ function App() {
     // almacenamos en el state
     guardarCitas(nuevasCitas)
   }
+
+  //elimina las citas de state
+  const eliminarCita = index => {
+    const nuevasCitas = [...citas]
+    nuevasCitas.splice(index,1)
+    guardarCitas(nuevasCitas)
+  }
+
+  // Cargar condicionalmente un titulo
+  const titulo = Object.keys(citas).length === 0 ? 'No hay citas':'Administrar las citas'
+
   return (
     <Fragment>
       <h1>Administrador de pacientes</h1>
@@ -105,13 +125,16 @@ function App() {
         <div className="row">
           <div className="one-half column">
             <Formulario
-              crearCita={crearCita}/>
+              crearCita={crearCita}
+              />
           </div>
           <div className="one-half column">
+            <h2>{titulo}</h2>
             {citas.map((cita, index) => (
               <Cita key={index}
                     index={index}
-                    cita={cita}/>
+                    cita={cita}
+                    eliminarCita={eliminarCita}/>
             ))}
           </div>
         </div>
