@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 
 function Cita({cita, index, eliminarCita}) {
   return (
@@ -99,7 +99,13 @@ function Formulario({crearCita}) {
 }
 
 function App() {
-  const [citas, guardarCitas] = useState([]);
+  //cargar las citas del localstorage
+  let citasIniciales = JSON.parse(localStorage.getItem('citas'))
+  if (!citasIniciales) {
+    citasIniciales = []
+  }
+
+  const [citas, guardarCitas] = useState(citasIniciales);
   console.log(citas);
   const crearCita = cita => {
     // tomar una copia del state y agregar nueva cita
@@ -114,6 +120,18 @@ function App() {
     nuevasCitas.splice(index,1)
     guardarCitas(nuevasCitas)
   }
+
+  // Solo se ejecuta cuando las citas tengan un cambio
+  useEffect(
+    () => {
+      let citasIniciales = JSON.parse(localStorage.getItem('citas'))
+      if (citasIniciales) {
+        localStorage.setItem('citas', JSON.stringify(citas))
+      }else {
+        localStorage.setItem('citas', JSON.stringify([]))
+      }
+    }, [citas]
+  )
 
   // Cargar condicionalmente un titulo
   const titulo = Object.keys(citas).length === 0 ? 'No hay citas':'Administrar las citas'
